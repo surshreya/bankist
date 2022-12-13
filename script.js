@@ -130,7 +130,7 @@ const calcDisplaySummary = (account) => {
     .map((deposit) => (deposit * account.interestRate) / 100)
     .reduce((acc, int) => acc + int, 0);
 
-  labelSumInterest.textContent = `${totalInterest}€`;
+  labelSumInterest.textContent = `${totalInterest.toFixed(2)}€`;
 };
 
 let currentAccount;
@@ -231,4 +231,26 @@ btnClose.addEventListener("click", function (e) {
   }
 
   inputCloseUsername.value = inputClosePin.value = "";
+});
+
+/*
+ * LOAN
+ */
+btnLoan.addEventListener("click", function (e) {
+  e.preventDefault();
+
+  const loanAmount = Number(inputLoanAmount.value);
+
+  if (
+    loanAmount > 0 &&
+    currentAccount.movements.some(
+      (movement) => movement > (loanAmount * 10) / 100
+    )
+  ) {
+    currentAccount.movements.push(loanAmount);
+
+    updateUI(currentAccount);
+  }
+
+  inputLoanAmount.value = "";
 });
