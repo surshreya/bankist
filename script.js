@@ -66,10 +66,13 @@ const labelTimer = document.querySelector(".timer");
 /*
  * Function to list all the transactions for a user
  */
-const displayMovements = (movements) => {
+const displayMovements = (movements, sorted = false) => {
   containerMovements.innerHTML = "";
 
-  movements.forEach((movement, i) => {
+  const moves = sorted ? movements.slice().sort((a, b) => a - b) : movements;
+  btnSort.textContent = sorted ? `\u2191 SORT` : ` \u2193 SORT`;
+
+  moves.forEach((movement, i) => {
     const type = movement > 0 ? "deposit" : "withdrawal";
     const html = `<div class="movements__row">
         <div class="movement__type movement__type--${type}">${
@@ -134,6 +137,7 @@ const calcDisplaySummary = (account) => {
 };
 
 let currentAccount;
+let sorted = false;
 
 const updateUI = (account) => {
   displayMovements(account.movements);
@@ -253,4 +257,14 @@ btnLoan.addEventListener("click", function (e) {
   }
 
   inputLoanAmount.value = "";
+});
+
+/*
+ * TRANSACTION SORT
+ */
+btnSort.addEventListener("click", function (e) {
+  e.preventDefault();
+
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted;
 });
