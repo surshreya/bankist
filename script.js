@@ -188,6 +188,7 @@ btnTransfer.addEventListener("click", function (e) {
   const receiverAcc = accounts.find(
     (account) => account.username === transferTo
   );
+  inputTransferAmount.value = inputTransferTo.value = "";
 
   if (
     receiverAcc &&
@@ -199,8 +200,35 @@ btnTransfer.addEventListener("click", function (e) {
     currentAccount.movements.push(-transferAmt);
     receiverAcc.movements.push(transferAmt);
 
-    inputTransferAmount.value = inputTransferTo.value = "";
-
     updateUI(currentAccount);
   }
+});
+
+/*
+ * ACCOUNT CLOSE
+ */
+btnClose.addEventListener("click", function (e) {
+  e.preventDefault();
+
+  const user = inputCloseUsername.value;
+  const pin = Number(inputClosePin.value);
+
+  if (user === currentAccount.username || pin === currentAccount.pin) {
+    const accountIdx = accounts.findIndex(
+      (account) => account.username === user && account.pin === pin
+    );
+
+    if (accountIdx >= 0) {
+      //Delete Account
+      accounts.splice(accountIdx, 1);
+
+      //Hide UI
+      containerApp.style.opacity = 0;
+
+      //Revert the welcome label
+      labelWelcome.textContent = "Log in to get started";
+    }
+  }
+
+  inputCloseUsername.value = inputClosePin.value = "";
 });
