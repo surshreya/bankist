@@ -175,3 +175,32 @@ btnLogin.addEventListener("click", function (e) {
     updateUI(currentAccount);
   }
 });
+
+/*
+ * AMOUNT TRANSFER
+ */
+btnTransfer.addEventListener("click", function (e) {
+  e.preventDefault();
+
+  const transferAmt = Number(inputTransferAmount.value);
+  const transferTo = inputTransferTo.value;
+
+  const receiverAcc = accounts.find(
+    (account) => account.username === transferTo
+  );
+
+  if (
+    receiverAcc &&
+    receiverAcc?.username !== currentAccount.username &&
+    transferAmt > 0 &&
+    currentAccount.balance >= transferAmt
+  ) {
+    //Transfer the amount
+    currentAccount.movements.push(-transferAmt);
+    receiverAcc.movements.push(transferAmt);
+
+    inputTransferAmount.value = inputTransferTo.value = "";
+
+    updateUI(currentAccount);
+  }
+});
