@@ -83,8 +83,6 @@ const displayMovements = (movements) => {
   });
 };
 
-displayMovements(account1.movements);
-
 /*
  * Function to create username for each accounts
  */
@@ -96,7 +94,6 @@ const createUsernames = (accounts) => {
       .map((name) => name[0])
       .join("");
   });
-  console.log(accounts);
 };
 
 createUsernames(accounts);
@@ -110,10 +107,7 @@ const calcDisplayBalance = (account) => {
     0
   );
   labelBalance.textContent = `${account.balance}€`;
-  console.log(account);
 };
-
-calcDisplayBalance(account1);
 
 /*
  * Function to calculate the transaction amount summary for an account
@@ -139,4 +133,45 @@ const calcDisplaySummary = (account) => {
   labelSumInterest.textContent = `${totalInterest}€`;
 };
 
-calcDisplaySummary(account1);
+let currentAccount;
+
+const updateUI = (account) => {
+  displayMovements(account.movements);
+
+  calcDisplayBalance(account);
+
+  calcDisplaySummary(account);
+};
+
+/*
+ * LOGIN
+ */
+btnLogin.addEventListener("click", function (e) {
+  e.preventDefault();
+
+  const user = inputLoginUsername.value;
+  const pin = inputLoginPin.value;
+
+  if (!user || !pin) {
+    return false;
+  }
+
+  currentAccount = accounts.find(
+    (account) => account.username === user && account.pin === Number(pin)
+  );
+
+  // Incase of successful login
+  if (currentAccount) {
+    // Display the main section
+    containerApp.style.opacity = 1;
+    labelWelcome.textContent = `Welcome back, ${
+      currentAccount.owner.split(" ")[0]
+    }`;
+
+    //Clear the input fields
+    inputLoginUsername.value = inputLoginPin.value = "";
+
+    //Update UI
+    updateUI(currentAccount);
+  }
+});
