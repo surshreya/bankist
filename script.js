@@ -156,6 +156,14 @@ const updateUI = (account) => {
 };
 
 /*
+ * FAKE LOGIN
+ */
+
+currentAccount = account1;
+updateUI(currentAccount);
+containerApp.style.opacity = 1;
+
+/*
  * LOGIN
  */
 btnLogin.addEventListener("click", function (e) {
