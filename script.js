@@ -74,19 +74,22 @@ const labelTimer = document.querySelector(".timer");
 /*
  * Function to list all the transactions for a user
  */
-const displayMovements = (movements, sorted = false) => {
+const displayMovements = (account, sorted = false) => {
   containerMovements.innerHTML = "";
 
-  const moves = sorted ? movements.slice().sort((a, b) => a - b) : movements;
+  const moves = sorted
+    ? account.movements.slice().sort((a, b) => a - b)
+    : account.movements;
   btnSort.textContent = sorted ? `\u2191 SORT` : ` \u2193 SORT`;
 
   moves.forEach((movement, i) => {
+    const movDate = formatDate(new Date(account.movementsDates[i]));
     const type = movement > 0 ? "deposit" : "withdrawal";
     const html = `<div class="movements__row">
         <div class="movement__type movement__type--${type}">${
       i + 1
     } ${type}</div>
-        <div class="movement__date">3 days ago</div>
+        <div class="movement__date">${movDate}</div>
         <div class="movement__value">${movement.toFixed(2)} €</div>
     </div>`;
 
@@ -110,6 +113,16 @@ const createUsernames = (accounts) => {
 createUsernames(accounts);
 
 /*
+ * Function to format dates
+ */
+const formatDate = (date) => {
+  const day = `${date.getDate()}`.padStart(2, 0);
+  const month = `${date.getMonth()}`.padStart(2, 0);
+  const year = `${date.getFullYear()}`;
+  return `${day}/${month}/${year}`;
+};
+
+/*
  * Function to calculate the total balance for an account
  */
 const calcDisplayBalance = (account) => {
@@ -118,6 +131,7 @@ const calcDisplayBalance = (account) => {
     0
   );
   labelBalance.textContent = `${account.balance.toFixed(2)}€`;
+  labelDate.textContent = formatDate(new Date());
 };
 
 /*
@@ -148,7 +162,7 @@ let currentAccount;
 let sorted = false;
 
 const updateUI = (account) => {
-  displayMovements(account.movements);
+  displayMovements(account);
 
   calcDisplayBalance(account);
 
@@ -220,6 +234,10 @@ btnTransfer.addEventListener("click", function (e) {
     currentAccount.movements.push(-transferAmt);
     receiverAcc.movements.push(transferAmt);
 
+    //Add transfer date
+    currentAccount.movementsDates.push(new Date().toISOString());
+    receiverAcc.movementsDates.push(new Date().toISOString());
+
     updateUI(currentAccount);
   }
 });
@@ -268,6 +286,7 @@ btnLoan.addEventListener("click", function (e) {
     )
   ) {
     currentAccount.movements.push(loanAmount);
+    currentAccount.movementsDates.push(new Date().toISOString());
 
     updateUI(currentAccount);
   }
