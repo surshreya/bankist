@@ -109,7 +109,7 @@ const calcDisplayBalance = (account) => {
     (acc, movement) => acc + movement,
     0
   );
-  labelBalance.textContent = `${account.balance}€`;
+  labelBalance.textContent = `${account.balance.toFixed(2)}€`;
 };
 
 /*
@@ -120,13 +120,13 @@ const calcDisplaySummary = (account) => {
     .filter((mov) => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
 
-  labelSumIn.textContent = `${totalDeposit}€`;
+  labelSumIn.textContent = `${totalDeposit.toFixed(2)}€`;
 
   const totalWithdrawal = account.movements
     .filter((mov) => mov < 0)
     .reduce((acc, mov) => acc - mov, 0);
 
-  labelSumOut.textContent = `${totalWithdrawal}€`;
+  labelSumOut.textContent = `${totalWithdrawal.toFixed(2)}€`;
 
   const totalInterest = account.movements
     .filter((mov) => mov > 0)
@@ -161,7 +161,7 @@ btnLogin.addEventListener("click", function (e) {
   }
 
   currentAccount = accounts.find(
-    (account) => account.username === user && account.pin === Number(pin)
+    (account) => account.username === user && account.pin === +pin
   );
 
   // Incase of successful login
@@ -186,7 +186,7 @@ btnLogin.addEventListener("click", function (e) {
 btnTransfer.addEventListener("click", function (e) {
   e.preventDefault();
 
-  const transferAmt = Number(inputTransferAmount.value);
+  const transferAmt = +inputTransferAmount.value;
   const transferTo = inputTransferTo.value;
 
   const receiverAcc = accounts.find(
@@ -215,7 +215,7 @@ btnClose.addEventListener("click", function (e) {
   e.preventDefault();
 
   const user = inputCloseUsername.value;
-  const pin = Number(inputClosePin.value);
+  const pin = +inputClosePin.value;
 
   if (user === currentAccount.username || pin === currentAccount.pin) {
     const accountIdx = accounts.findIndex(
@@ -243,7 +243,7 @@ btnClose.addEventListener("click", function (e) {
 btnLoan.addEventListener("click", function (e) {
   e.preventDefault();
 
-  const loanAmount = Number(inputLoanAmount.value);
+  const loanAmount = Math.floor(inputLoanAmount.value);
 
   if (
     loanAmount > 0 &&
