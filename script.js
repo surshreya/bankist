@@ -83,7 +83,7 @@ const displayMovements = (account, sorted = false) => {
   btnSort.textContent = sorted ? `\u2191 SORT` : ` \u2193 SORT`;
 
   moves.forEach((movement, i) => {
-    const movDate = formatDate(new Date(account.movementsDates[i]));
+    const movDate = formatMovementDate(new Date(account.movementsDates[i]));
     const type = movement > 0 ? "deposit" : "withdrawal";
     const html = `<div class="movements__row">
         <div class="movement__type movement__type--${type}">${
@@ -120,6 +120,18 @@ const formatDate = (date) => {
   const month = `${date.getMonth()}`.padStart(2, 0);
   const year = `${date.getFullYear()}`;
   return `${day}/${month}/${year}`;
+};
+
+const formatMovementDate = (date) => {
+  const calcDaysPassed = (date1, date2) =>
+    Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24));
+
+  const daysPassed = calcDaysPassed(new Date(), date);
+  if (daysPassed === 0) return "Today";
+  if (daysPassed === 1) return "Yesterday";
+  if (daysPassed <= 7) return `${daysPassed} days ago`;
+
+  return formatDate(date);
 };
 
 /*
@@ -300,6 +312,6 @@ btnLoan.addEventListener("click", function (e) {
 btnSort.addEventListener("click", function (e) {
   e.preventDefault();
 
-  displayMovements(currentAccount.movements, !sorted);
+  displayMovements(currentAccount, !sorted);
   sorted = !sorted;
 });
