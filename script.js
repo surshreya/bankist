@@ -17,6 +17,7 @@ const account1 = {
     "2020-07-28T23:36:17.929Z",
     "2020-08-01T10:51:36.790Z",
   ],
+  locale: "pt-PT",
 };
 
 const account2 = {
@@ -35,6 +36,7 @@ const account2 = {
     "2020-06-25T18:49:59.371Z",
     "2020-07-26T12:01:20.894Z",
   ],
+  locale: "en-US",
 };
 
 const accounts = [account1, account2];
@@ -72,6 +74,22 @@ const labelTimer = document.querySelector(".timer");
 // Functions
 
 /*
+ * Function to format dates
+ */
+
+const formatMovementDate = (date, locale) => {
+  const calcDaysPassed = (date1, date2) =>
+    Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24));
+
+  const daysPassed = calcDaysPassed(new Date(), date);
+  if (daysPassed === 0) return "Today";
+  if (daysPassed === 1) return "Yesterday";
+  if (daysPassed <= 7) return `${daysPassed} days ago`;
+
+  return new Intl.DateTimeFormat(locale).format(date);
+};
+
+/*
  * Function to list all the transactions for a user
  */
 const displayMovements = (account, sorted = false) => {
@@ -83,7 +101,10 @@ const displayMovements = (account, sorted = false) => {
   btnSort.textContent = sorted ? `\u2191 SORT` : ` \u2193 SORT`;
 
   moves.forEach((movement, i) => {
-    const movDate = formatMovementDate(new Date(account.movementsDates[i]));
+    const movDate = formatMovementDate(
+      new Date(account.movementsDates[i]),
+      account.locale
+    );
     const type = movement > 0 ? "deposit" : "withdrawal";
     const html = `<div class="movements__row">
         <div class="movement__type movement__type--${type}">${
@@ -113,28 +134,6 @@ const createUsernames = (accounts) => {
 createUsernames(accounts);
 
 /*
- * Function to format dates
- */
-const formatDate = (date) => {
-  const day = `${date.getDate()}`.padStart(2, 0);
-  const month = `${date.getMonth()}`.padStart(2, 0);
-  const year = `${date.getFullYear()}`;
-  return `${day}/${month}/${year}`;
-};
-
-const formatMovementDate = (date) => {
-  const calcDaysPassed = (date1, date2) =>
-    Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24));
-
-  const daysPassed = calcDaysPassed(new Date(), date);
-  if (daysPassed === 0) return "Today";
-  if (daysPassed === 1) return "Yesterday";
-  if (daysPassed <= 7) return `${daysPassed} days ago`;
-
-  return formatDate(date);
-};
-
-/*
  * Function to calculate the total balance for an account
  */
 const calcDisplayBalance = (account) => {
@@ -143,7 +142,9 @@ const calcDisplayBalance = (account) => {
     0
   );
   labelBalance.textContent = `${account.balance.toFixed(2)}€`;
-  labelDate.textContent = formatDate(new Date());
+  labelDate.textContent = new Intl.DateTimeFormat(account.locale).format(
+    new Date()
+  );
 };
 
 /*
