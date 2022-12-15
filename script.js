@@ -102,6 +102,34 @@ const formatCurrency = (value, locale, currency) => {
 };
 
 /*
+ * Function to handle logout timer
+ */
+const startLogOutTimer = () => {
+  const tick = () => {
+    const min = String(Math.trunc(time / 60)).padStart(2, 0);
+    const sec = String(Math.trunc(time % 60)).padStart(2, 0);
+
+    labelTimer.textContent = `${min}:${sec}`;
+
+    if (time === 0) {
+      clearInterval(timer);
+      // Logout from the app
+      containerApp.style.opacity = 0;
+      labelWelcome.textContent = "Log in to get started";
+    }
+
+    //Decrease 1s
+    time--;
+  };
+
+  //Set time to 1 min
+  let time = 60;
+  tick(); // Handle the first second
+  const timer = setInterval(tick, 1000);
+  return timer;
+};
+
+/*
  * Function to list all the transactions for a user
  */
 const displayMovements = (account, sorted = false) => {
@@ -201,7 +229,7 @@ const calcDisplaySummary = (account) => {
   );
 };
 
-let currentAccount;
+let currentAccount, timer;
 let sorted = false;
 
 const updateUI = (account) => {
@@ -211,14 +239,6 @@ const updateUI = (account) => {
 
   calcDisplaySummary(account);
 };
-
-/*
- * FAKE LOGIN
- */
-
-currentAccount = account1;
-updateUI(currentAccount);
-containerApp.style.opacity = 1;
 
 /*
  * LOGIN
@@ -247,6 +267,12 @@ btnLogin.addEventListener("click", function (e) {
 
     //Clear the input fields
     inputLoginUsername.value = inputLoginPin.value = "";
+
+    //Start logout timer
+    if (timer) {
+      clearInterval(timer);
+    }
+    timer = startLogOutTimer();
 
     //Update UI
     updateUI(currentAccount);
@@ -282,6 +308,10 @@ btnTransfer.addEventListener("click", function (e) {
     receiverAcc.movementsDates.push(new Date().toISOString());
 
     updateUI(currentAccount);
+
+    //Reset timer
+    clearInterval(timer);
+    timer = startLogOutTimer();
   }
 });
 
@@ -335,6 +365,10 @@ btnLoan.addEventListener("click", function (e) {
 
       updateUI(currentAccount);
     }, 3000);
+
+    //Reset timer
+    clearInterval(timer);
+    timer = startLogOutTimer();
   }
 
   inputLoanAmount.value = "";
