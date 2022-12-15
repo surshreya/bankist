@@ -328,10 +328,13 @@ btnLoan.addEventListener("click", function (e) {
       (movement) => movement > (loanAmount * 10) / 100
     )
   ) {
-    currentAccount.movements.push(loanAmount);
-    currentAccount.movementsDates.push(new Date().toISOString());
+    //Simulating some time for a loan approval
+    setTimeout(() => {
+      currentAccount.movements.push(loanAmount);
+      currentAccount.movementsDates.push(new Date().toISOString());
 
-    updateUI(currentAccount);
+      updateUI(currentAccount);
+    }, 3000);
   }
 
   inputLoanAmount.value = "";
