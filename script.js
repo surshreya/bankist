@@ -122,8 +122,8 @@ const startLogOutTimer = () => {
     time--;
   };
 
-  //Set time to 1 min
-  let time = 60;
+  //Set time to 5 mins
+  let time = 300;
   tick(); // Handle the first second
   const timer = setInterval(tick, 1000);
   return timer;
