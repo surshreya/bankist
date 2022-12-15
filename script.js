@@ -18,6 +18,7 @@ const account1 = {
     "2020-08-01T10:51:36.790Z",
   ],
   locale: "pt-PT",
+  currency: "EUR",
 };
 
 const account2 = {
@@ -37,6 +38,7 @@ const account2 = {
     "2020-07-26T12:01:20.894Z",
   ],
   locale: "en-US",
+  currency: "USD",
 };
 
 const accounts = [account1, account2];
@@ -90,6 +92,16 @@ const formatMovementDate = (date, locale) => {
 };
 
 /*
+ * Function to format currency
+ */
+const formatCurrency = (value, locale, currency) => {
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: currency,
+  }).format(value);
+};
+
+/*
  * Function to list all the transactions for a user
  */
 const displayMovements = (account, sorted = false) => {
@@ -105,13 +117,14 @@ const displayMovements = (account, sorted = false) => {
       new Date(account.movementsDates[i]),
       account.locale
     );
+    const movAmt = formatCurrency(movement, account.locale, account.currency);
     const type = movement > 0 ? "deposit" : "withdrawal";
     const html = `<div class="movements__row">
         <div class="movement__type movement__type--${type}">${
       i + 1
     } ${type}</div>
         <div class="movement__date">${movDate}</div>
-        <div class="movement__value">${movement.toFixed(2)} €</div>
+        <div class="movement__value">${movAmt}</div>
     </div>`;
 
     containerMovements.insertAdjacentHTML("afterbegin", html);
@@ -141,7 +154,12 @@ const calcDisplayBalance = (account) => {
     (acc, movement) => acc + movement,
     0
   );
-  labelBalance.textContent = `${account.balance.toFixed(2)}€`;
+
+  labelBalance.textContent = formatCurrency(
+    account.balance,
+    account.locale,
+    account.currency
+  );
   labelDate.textContent = new Intl.DateTimeFormat(account.locale).format(
     new Date()
   );
@@ -155,20 +173,32 @@ const calcDisplaySummary = (account) => {
     .filter((mov) => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
 
-  labelSumIn.textContent = `${totalDeposit.toFixed(2)}€`;
+  labelSumIn.textContent = formatCurrency(
+    totalDeposit,
+    account.locale,
+    account.currency
+  );
 
   const totalWithdrawal = account.movements
     .filter((mov) => mov < 0)
     .reduce((acc, mov) => acc - mov, 0);
 
-  labelSumOut.textContent = `${totalWithdrawal.toFixed(2)}€`;
+  labelSumOut.textContent = formatCurrency(
+    totalWithdrawal,
+    account.locale,
+    account.currency
+  );
 
   const totalInterest = account.movements
     .filter((mov) => mov > 0)
     .map((deposit) => (deposit * account.interestRate) / 100)
     .reduce((acc, int) => acc + int, 0);
 
-  labelSumInterest.textContent = `${totalInterest.toFixed(2)}€`;
+  labelSumInterest.textContent = formatCurrency(
+    totalInterest,
+    account.locale,
+    account.currency
+  );
 };
 
 let currentAccount;
